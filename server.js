@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -11,13 +10,12 @@ app.use(cors());
 app.use(express.json());
 
 // ── Conexión MongoDB Atlas ───────────────────────────────────────────────────
-// RNF01: la cadena de conexión está SOLO aquí en el backend, nunca en la app móvil
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => console.log("MongoDB Atlas conectado"))
     .catch((err) => console.error("Error MongoDB:", err));
 
-// ── Modelo (campos compatibles con la app Android) ───────────────────────────
+// ── Modelo ───────────────────────────────────────────────────────────────────
 const Entrenamiento = mongoose.model("Entrenamiento", {
     titulo    : { type: String, default: "" },
     resumen   : { type: String, default: "" },
@@ -25,6 +23,11 @@ const Entrenamiento = mongoose.model("Entrenamiento", {
     minutos   : { type: Number, default: 0 },
     fecha     : { type: String, default: "" },
     hora      : { type: String, default: "" },
+});
+
+// ── GET /  →  ruta raíz ──────────────────────────────────────────────────────
+app.get("/", (req, res) => {
+    res.json({ success: true, message: "Bitácora del Atleta API - Servidor activo" });
 });
 
 // ── GET /api/test  →  health-check ───────────────────────────────────────────
@@ -56,7 +59,8 @@ app.get("/api/entradas", async (req, res) => {
     }
 });
 
+// ── Servidor ─────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 });
